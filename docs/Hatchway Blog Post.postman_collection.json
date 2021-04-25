@@ -45,7 +45,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{API_URL}}/posts?tags=culture&sortBy=likes&direction=desc",
+					"raw": "{{API_URL}}/posts?tags=history,tech&sortBy=likes&direction=desc",
 					"host": [
 						"{{API_URL}}"
 					],
@@ -55,7 +55,7 @@
 					"query": [
 						{
 							"key": "tags",
-							"value": "culture"
+							"value": "history,tech"
 						},
 						{
 							"key": "sortBy",

@@ -23,9 +23,9 @@ module.exports.ping = () => {
 
 module.exports.getPosts = async ( query ) => {
 
-  const { tags : tag, sortBy = "id", direction = "asc"} = query
+  const { tags , sortBy = "id", direction = "asc"} = query
 
-  const cacheKey = `${collection}_${tag}`;
+  const cacheKey = `${collection}_${tags}`;
   let posts = []
 
   if (cacheService.has(cacheKey)) {
@@ -33,23 +33,43 @@ module.exports.getPosts = async ( query ) => {
     posts =  cacheService.get(cacheKey)
   } else {
     console.log(`${LOG_PREFIX} ${cacheKey} not found in cache, fetching posts from server`)
-    try {
 
-      const remoteFetch = await httpService(config.app.blogEndpoint, {}, 'GET', null, { tag })
-      if (remoteFetch.data && remoteFetch.data.posts && remoteFetch.data.posts.length > 0) {
-        posts = remoteFetch.data.posts
-        cacheService.set(`${cacheKey}`, posts)
-        console.info(`${LOG_PREFIX} successfully cached ${posts.length} ${cacheKey} results`)
-      }
+
+   
+    try {
+      const promiseArr = tags.split(',').map( async tag => await httpService(config.app.blogEndpoint, {}, 'GET', null, { tag }))
+      const remoteFetch = await Promise.all(promiseArr)
+      
+      console.log('remoteFetch', remoteFetch)
+      const uniqueIds = {}
+      const uniquePosts = remoteFetch.reduce((_posts, tagPosts) => {
+        console.log('tagPosts', tagPosts)
+        if(tagPosts.data && tagPosts.data.posts && tagPosts.data.posts.length > 0) {
+          _posts.push(...tagPosts.data.posts)
+        }
+        return _posts
+      } , []).reduce((uniquePosts, _post) => {
+        if (uniqueIds[_post["id"]] === undefined) {
+          uniqueIds[_post["id"]] = 1
+          uniquePosts.push(_post)
+        }
+        return uniquePosts
+      }, [])
+
+        if (uniquePosts.length > 0) {
+          posts = uniquePosts
+          cacheService.set(`${cacheKey}`, posts)
+          console.info(`${LOG_PREFIX} successfully cached ${posts.length} ${cacheKey} results`)
+        }
 
     } catch (e) {
-      console.error(`${LOG_PREFIX} error fetching ${cacheKey} from remote server `)
+      console.error(`${LOG_PREFIX} error fetching ${cacheKey} from remote server `, e)
     }
   }
 
   return posts.length === 0 ? new PostsResponse([]) : new PostsResponse(posts.sort((x, y) => {
-      const [sortX, sortY] = [String(x[sortBy]), String(y[sortBy])]
-      return direction === 'desc' ? sortY.localeCompare(sortX) : sortX.localeCompare(sortY)
+    const [sortX, sortY] = [x[sortBy], y[sortBy]]
+    return direction === 'desc' ? +sortY - +sortX : +sortX - +sortY
   }).map(postDetail => new Post(postDetail)))
    
 }
