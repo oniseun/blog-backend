@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "31f63ba7-b105-401e-8243-324ccb83013d",
+		"name": "Hatchway Blog Post",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/health",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ping!",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/ping",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get Posts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/posts?tags=culture&sortBy=likes&direction=desc",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"posts"
+					],
+					"query": [
+						{
+							"key": "tags",
+							"value": "culture"
+						},
+						{
+							"key": "sortBy",
+							"value": "likes"
+						},
+						{
+							"key": "direction",
+							"value": "desc"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
