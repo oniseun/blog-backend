@@ -34,16 +34,11 @@ module.exports.getPosts = async ( query ) => {
   } else {
     console.log(`${LOG_PREFIX} ${cacheKey} not found in cache, fetching posts from server`)
 
-
-   
     try {
       const promiseArr = tags.split(',').map( async tag => await httpService(config.app.blogEndpoint, {}, 'GET', null, { tag }))
       const remoteFetch = await Promise.all(promiseArr)
-      
-      console.log('remoteFetch', remoteFetch)
       const uniqueIds = {}
       const uniquePosts = remoteFetch.reduce((_posts, tagPosts) => {
-        console.log('tagPosts', tagPosts)
         if(tagPosts.data && tagPosts.data.posts && tagPosts.data.posts.length > 0) {
           _posts.push(...tagPosts.data.posts)
         }
@@ -56,20 +51,17 @@ module.exports.getPosts = async ( query ) => {
         return uniquePosts
       }, [])
 
-        if (uniquePosts.length > 0) {
-          posts = uniquePosts
-          cacheService.set(`${cacheKey}`, posts)
-          console.info(`${LOG_PREFIX} successfully cached ${posts.length} ${cacheKey} results`)
-        }
+      if (uniquePosts.length > 0) {
+        posts = uniquePosts.sort((x, y) => direction === 'desc' ? +y[sortBy] - +x[sortBy]: +x[sortBy] - +y[sortBy])
+        cacheService.set(`${cacheKey}`, posts)
+        console.info(`${LOG_PREFIX} successfully cached ${posts.length} ${cacheKey} results`)
+      }
 
     } catch (e) {
       console.error(`${LOG_PREFIX} error fetching ${cacheKey} from remote server `, e)
     }
   }
 
-  return posts.length === 0 ? new PostsResponse([]) : new PostsResponse(posts.sort((x, y) => {
-    const [sortX, sortY] = [x[sortBy], y[sortBy]]
-    return direction === 'desc' ? +sortY - +sortX : +sortX - +sortY
-  }).map(postDetail => new Post(postDetail)))
+  return posts.length === 0 ? new PostsResponse([]) : new PostsResponse(posts.map(postDetail => new Post(postDetail)))
    
 }
