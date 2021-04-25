@@ -1,0 +1,4 @@
+PORT=7200
+CACHE_TTL=3600
+CACHE_CHECK_PERIOD=600
+BLOG_POST_ENDPOINT=https://api.hatchways.io/assessment/blog/posts
