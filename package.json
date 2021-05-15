@@ -1,7 +1,7 @@
 {
-  "name": "Hatchways-BA",
+  "name": "blog-backend",
   "version": "1.0.0",
-  "description": "Welcome to Hatchway Backend Assessment Blog",
+  "description": "Welcome to Blog Backend",
   "main": "app.js",
   "scripts": {
     "eslint": "eslint ./src --fix",

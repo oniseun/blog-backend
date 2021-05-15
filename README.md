@@ -1,6 +1,5 @@
-# Hatchways-Assessment
+# Blog Backend
 
-> BACK-END ASSESSMENT - BLOG POSTS
 
 ## Build Setup
 

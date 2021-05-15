@@ -1,7 +1,7 @@
 
 FROM node:12.13-alpine
 
-WORKDIR /usr/src/backend-assessment
+WORKDIR /usr/src/blog-backend
 
 COPY package*.json ./
 
